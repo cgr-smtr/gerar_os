@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Data & Results
+results/
+*.csv
+*.rds
+*.parquet
+.RData
+.Rhistory
+.Rproj.user/
