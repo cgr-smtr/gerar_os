@@ -1,4 +1,4 @@
-# Gerarador de OS (Python version)
+# Gerador de OS (Python version)
 
 Este repositório contém a versão em Python das ferramentas de geração e auditoria de Ordem de Serviço (OS) para a rede de ônibus.
 
