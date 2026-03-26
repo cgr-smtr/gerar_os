@@ -121,23 +121,27 @@ if processar and file_antigo and file_novo:
         
         # Diagnóstico Tabular
         diag = comparativo.groupby("Serviço", group_keys=False).apply(lambda x: pd.Series({
+            "Extensão": "X" if any(x['Campo'].str.contains("Extensão", case=False)) else "",
             "Partida": "X" if any(x['Campo'].str.contains("Partida|Viagem", case=False)) else "",
-            "Quilometragem": "X" if any(x['Campo'].str.contains("Km|Quilometragem|Extensão", case=False)) else ""
+            "Quilometragem": "X" if any(x['Campo'].str.contains("Km|Quilometragem", case=False)) else ""
         }), include_groups=False).reset_index()
 
         # UI Tabs
-        tab1, tab2, tab3, tab4 = st.tabs(["Diferenças Encontradas", "Apenas Partidas", "Apenas Quilometragem", "Resumo de Alterações"])
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Diferenças Encontradas", "Apenas Extensões", "Apenas Partidas", "Apenas Quilometragem", "Resumo de Alterações"])
         
         with tab1:
             st.dataframe(comparativo, width='stretch')
             
         with tab2:
-            st.dataframe(comparativo[comparativo['Campo'].str.contains("Partida|Viagem", case=False)], width='stretch')
+            st.dataframe(comparativo[comparativo['Campo'].str.contains("Extensão", case=False)], width='stretch')
 
         with tab3:
-            st.dataframe(comparativo[comparativo['Campo'].str.contains("Km|Quilometragem|Extensão", case=False)], width='stretch')
-            
+            st.dataframe(comparativo[comparativo['Campo'].str.contains("Partida|Viagem", case=False)], width='stretch')
+
         with tab4:
+            st.dataframe(comparativo[comparativo['Campo'].str.contains("Km|Quilometragem", case=False)], width='stretch')
+            
+        with tab5:
             col1, col2 = st.columns(2)
             with col1:
                 st.metric("IVK Anterior", f"{ivk_antigo:.5f}")
