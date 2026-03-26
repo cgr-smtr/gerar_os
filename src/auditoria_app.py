@@ -168,15 +168,39 @@ if processar and file_antigo and file_novo:
             report.write("==================================================\n")
             report.write("       RELATORIO DE AUDITORIA E PRODUTIVIDADE     \n")
             report.write("==================================================\n")
-            report.write(f"Analise gerada em: {datetime.now().strftime('%d/%m/%Y %H:%M')}\n\n")
-            report.write(f"IVK Anterior: {ivk_antigo:.5f} | Atual: {ivk_atual:.5f}\n")
-            report.write(f"Variacao de Eficiencia: {var_ivk:.2f}%\n")
+            report.write(f"Analise gerada em: {datetime.now().strftime('%d/%m/%Y %H:%M')} \n\n")
+
+            report.write("[1] METRICAS DE PRODUTIVIDADE (IVK)\n")
+            report.write(f"IVK Anterior (Partidas/Km):  {ivk_antigo:.5f}  | Atual:  {ivk_atual:.5f} \n")
+            report.write(f"Variacao de Eficiencia:  {var_ivk:.2f} %\n")
             report.write("--------------------------------------------------\n\n")
-            report.write(f"Variacao KM Total: {impacto_km:.2f} km\n")
-            report.write(f"Variacao Viagens: {impacto_viagens:.0f} partidas\n\n")
-            report.write(f"Serviços Alterados: {', '.join(comparativo['Serviço'].unique())}\n\n")
-            
-            st.download_button(
+
+            report.write("[2] IMPACTO BRUTO NA REDE\n")
+            report.write(f"Variacao KM Total:  {impacto_km:.1f}  km\n")
+            report.write(f"Variacao Viagens:   {impacto_viagens:.0f}  partidas\n\n")
+
+            report.write("[3] EXTRATO DE LINHAS (ENTRADAS/SAIDAS)\n")
+            report.write(f"Novas: {len(novas)} \n")
+            if not novas.empty:
+                report.write(novas.to_string(index=False) + "\n")
+            report.write(f"\nExcluidas: {len(excluidas)} \n")
+            if not excluidas.empty:
+                report.write(excluidas.to_string(index=False) + "\n")
+            report.write("\n")
+
+            report.write("[4] LISTA DE SERVICOS ALTERADOS (REFERENCIA)\n")
+            # Format in chunks of lines if many
+            servicos_alterados = sorted(comparativo['Serviço'].unique())
+            for i in range(0, len(servicos_alterados), 20):
+                chunk = [str(servicos_alterados[j]) for j in range(i, min(i + 20, len(servicos_alterados)))]
+                report.write(", ".join(chunk) + " ,\n")
+            report.write("\n")
+
+            report.write("[5] DIAGNOSTICO TABULAR DE ALTERACOES\n")
+            report.write(diag.to_csv(sep=';', index=False).replace('\r', ''))
+
+            st.sidebar.markdown("---")
+            st.sidebar.download_button(
                 label="Baixar Relatório Completo",
                 data=report.getvalue(),
                 file_name=f"Resumo_Auditoria_OS_{datetime.now().strftime('%Y%m%d')}.txt",
