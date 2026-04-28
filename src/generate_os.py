@@ -127,6 +127,10 @@ def main():
     })
     tabela_os = tabela_os.sort_values(["Serviço", "Sentido"])
 
+    # Arredondar valores numéricos para evitar excesso de casas decimais
+    float_cols = tabela_os.select_dtypes(include=[np.float64, np.float32]).columns
+    tabela_os[float_cols] = tabela_os[float_cols].round(3)
+
     # Exportar Tabela OS Base
     os_csv_path = os.path.join(OUTPUT_DIR, "tabela_programacao_OS.csv")
     export_csv_br(tabela_os, os_csv_path)
@@ -244,6 +248,10 @@ def main():
 
         available_cols = [c for c in col_ordem if c in df_final_tipo.columns]
         df_final_tipo = df_final_tipo[available_cols]
+
+        # Arredondar valores numéricos para evitar excesso de casas decimais
+        float_cols = df_final_tipo.select_dtypes(include=[np.float64, np.float32]).columns
+        df_final_tipo[float_cols] = df_final_tipo[float_cols].round(3)
 
         # Exportar
         nome_arquivo = f"tabela_{tipo.lower().replace(' ', '_')}.csv"

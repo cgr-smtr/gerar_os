@@ -43,3 +43,7 @@ Os caminhos de entrada e saída podem ser ajustados diretamente no topo do arqui
 - **Entrada padrão**: `C:\R_SMTR\resultados\partidas\partidas.parquet`
 - **Saída padrão**: `C:\R_SMTR\resultados\arquivos_os\`
 - **Filtros aplicados**: O script filtra automaticamente `route_type == "700"` e **exclui** partidas do consórcio `MOBI-Rio`.
+
+## Licença
+
+Este projeto está licenciado sob a Licença MIT - consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
