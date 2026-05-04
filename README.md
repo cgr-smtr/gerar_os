@@ -20,6 +20,11 @@ python -m venv venv
 source venv/bin/activate  # ou venv\Scripts\activate no Windows
 pip install -r requirements.txt
 ```
+Se usar o uv:
+```bash
+uv venv
+uv pip install -r requirements.txt
+```
 
 ## Como Usar
 
@@ -29,6 +34,10 @@ Para processar os dados de partidas e gerar os arquivos CSV:
 ```bash
 python src/generate_os.py
 ```
+Ou com o uv:
+```bash
+uv run python src/generate_os.py
+```
 Os resultados serão salvos em `C:\R_SMTR\resultados\arquivos_os\`.
 
 ### 2. Auditoria de Mudanças
@@ -36,6 +45,10 @@ Para abrir a interface de auditoria:
 
 ```bash
 streamlit run src/auditoria_app.py
+```
+Ou com o uv:
+```bash
+uv run streamlit run src/auditoria_app.py
 ```
 
 ## Configurações e Filtros
