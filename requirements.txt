@@ -3,3 +3,7 @@ pyarrow
 streamlit
 openpyxl
 numpy
+geopandas
+shapely
+pyproj
+pydeck
