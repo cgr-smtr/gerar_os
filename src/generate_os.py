@@ -6,8 +6,17 @@ from datetime import datetime
 # ============================================================================
 # CONFIGURATIONS
 # ============================================================================
-INPUT_PATH = r"C:\R_SMTR\resultados\partidas\partidas.parquet"
+
+ano_gtfs = "2026"
+mes_gtfs = "10"
+estudo_gtfs = "02"  # ESTUDO
+
+sufixo = f"{ano_gtfs}-{mes_gtfs}-{estudo_gtfs}Q"
+
+INPUT_PATH = rf"C:\R_SMTR\resultados\partidas\partidas_{sufixo}.parquet" # .parquet ou .csv
+
 OUTPUT_DIR = r"C:\R_SMTR\resultados\arquivos_os"
+
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 TIPO_DIA_MAP = {
@@ -66,6 +75,9 @@ def main():
     # Calcular quilometragem
     resumo['quilometragem'] = resumo['partidas'] * (resumo['extensao'] / 1000)
 
+    # Descartar PF real do input: este script gera PF apenas de forma sintética
+    resumo = resumo[resumo['tipo_dia_completo'] != "Ponto Facultativo"].copy()
+
     # --- Geração de Ponto Facultativo baseado em Dia Útil ---
     pf = resumo[resumo['tipo_dia_completo'] == "Dia Útil"].copy()
     pf['eh_noturno'] = pf['trip_short_name'].str.startswith("SN")
@@ -85,11 +97,11 @@ def main():
     id_cols = ['trip_short_name', 'trip_headsign', 'route_long_name', 'agency_name', 'direction_id', 'extensao']
     
     partidas_pivot = resumo_completo.pivot_table(
-        index=id_cols, columns='col_partidas', values='partidas', fill_value=0
+        index=id_cols, columns='col_partidas', values='partidas', fill_value=0, aggfunc='sum'
     ).reset_index()
 
     km_pivot = resumo_completo.pivot_table(
-        index=id_cols, columns='col_km', values='quilometragem', fill_value=0
+        index=id_cols, columns='col_km', values='quilometragem', fill_value=0, aggfunc='sum'
     ).reset_index()
 
     tabela_final = pd.merge(partidas_pivot, km_pivot, on=id_cols)
@@ -126,6 +138,10 @@ def main():
         "extensao": "Extensão"
     })
     tabela_os = tabela_os.sort_values(["Serviço", "Sentido"])
+
+    # Colunas de partidas sempre inteiras (saída sintética pode vir em float)
+    part_int_cols = [c for c in tabela_os.columns if "partidas" in c.lower()]
+    tabela_os[part_int_cols] = tabela_os[part_int_cols].round().astype(int)
 
     # Arredondar valores numéricos para evitar excesso de casas decimais
     float_cols = tabela_os.select_dtypes(include=[np.float64, np.float32]).columns
@@ -248,6 +264,10 @@ def main():
 
         available_cols = [c for c in col_ordem if c in df_final_tipo.columns]
         df_final_tipo = df_final_tipo[available_cols]
+
+        # Colunas de partidas sempre inteiras
+        part_int_cols = [c for c in df_final_tipo.columns if "partidas" in c.lower()]
+        df_final_tipo[part_int_cols] = df_final_tipo[part_int_cols].round().astype(int)
 
         # Arredondar valores numéricos para evitar excesso de casas decimais
         float_cols = df_final_tipo.select_dtypes(include=[np.float64, np.float32]).columns

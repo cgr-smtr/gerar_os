@@ -9,7 +9,8 @@ Este repositório contém ferramentas em Python para geração, auditoria e comp
 ```
 gerar_os/
 ├── src/
-│   ├── generate_os.py        # Geração de tabelas de programação OS
+│   ├── generate_os.py          # Geração de tabelas de programação OS
+│   ├── generate_os_pf_input.py # Idem, mas sem cálculo de Ponto Facultativo
 │   ├── auditoria_app.py      # Auditoria de programação OS (tabelas CSV/Parquet)
 │   └── auditoria_gtfs_app.py # Auditoria geoespacial de traçados GTFS
 ├── legacy/                   # Scripts originais em R (referência histórica)
@@ -76,11 +77,40 @@ uv run python src/generate_os.py
 - `route_type == "700"` (ônibus urbanos)
 - Exclusão do consórcio `MOBI-Rio`
 
+**Ponto Facultativo:** este script estima as partidas de PF a partir do Dia Útil
+(62% das partidas, mantendo intactos os noturnos com prefixo `SN`).
+
 > Os caminhos podem ser ajustados no topo do arquivo `src/generate_os.py`.
 
 ---
 
-### 2. `auditoria_app.py` — Auditoria de Programação OS
+### 2. `generate_os_pf_input.py` — Geração de OS com PF vinda do Input
+
+Clone do `generate_os.py` para o novo fluxo em que o arquivo de partidas já
+contém as partidas de Ponto Facultativo (`tipo_dia == "pf"`). Não há cálculo
+sintético de PF: os valores do input são usados como estão.
+
+**Executar:**
+```bash
+python src/generate_os_pf_input.py
+# ou
+uv run python src/generate_os_pf_input.py
+```
+
+**Diferenças em relação ao original:**
+
+| Item                          | `generate_os.py`                     | `generate_os_pf_input.py`            |
+|-------------------------------|--------------------------------------|--------------------------------------|
+| Cálculo de PF                 | Estimado (62% do Dia Útil)           | Não calcula (vem do input)           |
+| Saída (OS)                    | `C:\R_SMTR\resultados\arquivos_os\`  | `C:\R_SMTR\resultados\arquivos_os_pf\` |
+| Entrada e filtros             | Idênticos ao original                | Idênticos ao original                |
+
+> Se o arquivo de entrada não possuir linhas com `tipo_dia == "pf"`, o Plano
+> Geral de Ponto Facultativo é pulado com um aviso.
+
+---
+
+### 3. `auditoria_app.py` — Auditoria de Programação OS
 
 Interface Streamlit para comparar duas versões de tabelas de programação OS (CSV ou Parquet) e identificar mudanças entre quinzenas.
 
@@ -99,7 +129,7 @@ uv run streamlit run src/auditoria_app.py
 
 ---
 
-### 3. `auditoria_gtfs_app.py` — Auditoria Geoespacial de Traçados GTFS
+### 4. `auditoria_gtfs_app.py` — Auditoria Geoespacial de Traçados GTFS
 
 Interface Streamlit para comparar dois feeds GTFS (`.zip`) e identificar diferenças de traçado por trip/linha, com visualização em mapa interativo.
 
