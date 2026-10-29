@@ -11,8 +11,8 @@ from datetime import datetime
 # que são agrupadas normalmente via TIPO_DIA_MAP.
 
 ano_gtfs = "2026"
-mes_gtfs = "10"
-estudo_gtfs = "02"  # ESTUDO
+mes_gtfs = "11"
+estudo_gtfs = "01"  # ESTUDO
 
 sufixo = f"{ano_gtfs}-{mes_gtfs}-{estudo_gtfs}Q"
 

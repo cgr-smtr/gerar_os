@@ -12,7 +12,8 @@ gerar_os/
 │   ├── generate_os.py          # Geração de tabelas de programação OS
 │   ├── generate_os_pf_input.py # Idem, mas sem cálculo de Ponto Facultativo
 │   ├── auditoria_app.py      # Auditoria de programação OS (tabelas CSV/Parquet)
-│   └── auditoria_gtfs_app.py # Auditoria geoespacial de traçados GTFS
+│   ├── auditoria_gtfs_app.py # Auditoria geoespacial de traçados GTFS
+│   └── contar_partidas_app.py # Contador de partidas por faixa horária
 ├── legacy/                   # Scripts originais em R (referência histórica)
 ├── requirements.txt          # Dependências do projeto
 └── .gitignore
@@ -163,6 +164,28 @@ uv run streamlit run src/auditoria_gtfs_app.py
 | ➖ Rota removida  | Presente apenas no feed anterior                                |
 
 **Formatação numérica:** padrão brasileiro (milhar: `.` | decimal: `,`), extensões em metros (`m`).
+
+---
+
+### 5. `contar_partidas_app.py` — Contador de Partidas por Faixa
+
+Interface Streamlit que conta partidas por faixa horária (00:00-01:00, 01:00-02:00, ... 23:00-24:00), a partir de listas coladas ou de arquivos XLSX de quadro horário.
+
+**Executar:**
+```bash
+streamlit run src/contar_partidas_app.py
+# ou
+uv run streamlit run src/contar_partidas_app.py
+```
+
+**Modos de entrada:**
+
+| Modo                     | Descrição                                                                 |
+|--------------------------|---------------------------------------------------------------------------|
+| Arquivo XLSX (raiz)      | Lê automaticamente os `.xlsx` na raiz do projeto; Ida e Volta detectadas pelos cabeçalhos (`Horário*`) |
+| Colar lista              | Cola texto tab-separated (`Horário\tIntervalo`); horários duplicados são removidos |
+
+**Saídas:** tabela por aba (Ida/Volta/Total), partidas por faixa (aba × direção), consolidado geral e download CSV (BR).
 
 ---
 
